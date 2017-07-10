@@ -1,9 +1,11 @@
 White Wine Quality by Diogo Cosin Ayres de Oliveira
 ========================================================
 
-This report explores a dataset containing informations about 4898 white wines provided by Cortez et al. (2009). Each observation is described by its chemical properties and experts quality review.
+This report explores a dataset containing information about 4898 white wines 
+provided by Cortez et al. (2009). Each observation is described by its chemical 
+properties and experts quality review.
 
-First, some numbers about the dataset.
+First, some numbers about the data set.
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE, packages}
 # Load all of the packages that you end up using in your analysis in this code
@@ -21,6 +23,7 @@ First, some numbers about the dataset.
 library(ggplot2)
 library(scales)
 library(gridExtra)
+library(GGally)
 ```
 
 ```{r echo=FALSE, Load_the_Data}
@@ -33,7 +36,8 @@ df_ww = read.csv("wineQualityWhites.csv", strip.white = TRUE)
 dim(df_ww)
 ```
 
-The dataset contains 4898 observation with 13 attributes including one for index and another for the quality grade.
+The data set contains 4898 observation with 13 attributes including one for index
+and another for the quality grade.
 
 Below, the summary statics about these 13 attributes.
 
@@ -47,7 +51,8 @@ summary(df_ww)
 
 ## Wine Quality
 
-Each wine is rated in a 0 (very bad) - 10 (very excellent) grade by at least 3 wine experts.  
+Each wine is rated in a 0 (very bad) - 10 (very excellent) grade by at least 3 
+wine experts.  
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
 summary(df_ww$quality)
@@ -55,19 +60,24 @@ summary(df_ww$quality)
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE, Univariate_Plots}
 ggplot(aes(x = quality), data = df_ww) + 
-  geom_histogram(binwidth = 1, color = 'black', fill = '#099DD9') +
+  geom_bar(color = 'black', fill = '#099DD9') +
   xlim(0,10) +
   ggtitle('Distribution of Observed Quality Wines') +
   xlab('Quality') +
   ylab('Count') +
+  scale_x_continuous(breaks=c(seq(0,10))) +
   theme(plot.title = element_text(hjust = 0.5))
 ```
 
-We see a normal distribution in the quality attribute histogram. Most wines are reviewed with quality around 6. The maximun quality observed is 9 while minumum is 3. No wine received a perfect 10 review and just a few has got a 9 review. Let's try to understand throughout this EDA report what factors produce better wines, accorgind to experts opinions.   
+We see a normal distribution in the quality attribute histogram. Most wines are
+reviewed with quality around 6. The maximum quality observed is 9 while minimum
+is 3. No wine received a perfect 10 review and just a few has got a 9 review.
+Let's try to understand throughout this EDA report what factors produce better
+wines, according to experts opinions.   
 
 ## Acidity Attributes
 
-Now let's visualize the acidity chemical properties of our dataset wines.
+Now let's visualize the acidity chemical properties of our data set wines.
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
 
@@ -98,11 +108,28 @@ p3 = ggplot(aes(x = volatile.acidity), data = df_ww) +
 grid.arrange(p1,p2,p3,ncol=1)
 ```
 
-It is noticed a normal distribution in the acidic wines attributes, however we can see too many residues values to the right causing the maximum values to be distant from median values. Can the less frequency bins indicate a higher quality wine once most wines present median attributes values? Maybe in multivariate analysis we will find some relationship between these attributes and the wine quality.
+Bellow, it is presented the summary statics of these three attributes.
+
+```{r}
+summary(df_ww$fixed.acidity)
+summary(df_ww$volatile.acidity)
+summary(df_ww$citric.acid)
+```
+
+It is noticed a normal distribution in the acidic wines attributes, however we
+can see too many residues values to the right causing the maximum values to be
+distant from median values. For instance, for fixed acidity the maximum value
+observed was 14.2 while the median was 6.8 and the 3rd quartile, 7.3. We see the
+same behavior for volatile acidity (median of 0.26, 3rd quartile of 0.32 and
+maximum of 1.1) and citric acid (median of 0.32, 3rd quatile of 0.39 and maximum
+of 1.66). Can the less frequency bins indicate a higher quality wine once most
+wines present median attributes values? Maybe in multivariate analysis we will
+find some relationship between these attributes and the wine quality.
 
 ## Sulfur and Sulphate Attributes 
 
-Following the univariate exploration, let's plot the histogram distribution fo the sulfur and sulphate attributes.
+Following the uni-variate exploration, let's plot the histogram distribution of
+the sulfur and sulphate attributes.
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
 p1 = ggplot(aes(x = free.sulfur.dioxide), data = df_ww) + 
@@ -132,7 +159,23 @@ p3 = ggplot(aes(x = 1000*sulphates), data = df_ww) +
 grid.arrange(p1,p2,p3,ncol=1)
 ```
 
-Again, as we have seen for the acidic attributes, most wine have same characteristics regarding its sulphates attributes given that accumulate around median values. Soon, as the quality distribution is approximatelly normal, we may expect that wine with atypical acidic attributes are better reviewed than median ones and we will test in multivariate analysis.
+Summary stats for the sulfur and sulphates attributes.
+
+```{r}
+summary(df_ww$free.sulfur.dioxide)
+summary(df_ww$total.sulfur.dioxide)
+summary(df_ww$sulphates)
+```
+
+Again, as we have seen for the acidic attributes, most wine have same
+characteristics regarding its sulphates attributes given that the observations
+accumulate around median values. Soon, as the quality distribution is
+approximately normal, we may expect that wine with atypical acidic attributes
+are better reviewed than median ones and we will test in multivariate analysis.
+Regarding the distributions, we notice that free sulfur dioxide presents a long
+right tail causing the maximum value to be 289 while the median is 34 and the
+3rd quartile, 46. On the other hand, we don't have the same pattern for the left
+side as the 1st quartile is 23 and the minimum value, 2. 
 
 ## pH and Alcohol
 
@@ -158,11 +201,23 @@ p2 = ggplot(aes(x = alcohol), data = df_ww) +
 grid.arrange(p1,p2,ncol=1)
 ```
 
-Trough the plots we can see that the distribution curve of pH attribute is normal while alcohol curve is left skewed. It is interisting that both plots don't present same distribution since I've expected that alcohol content would be highly related to the pH. However, the different distribution shapes show the opposite.
+```{r}
+summary(df_ww$pH)
+summary(df_ww$alcohol)
+```
+
+
+Trough the plots we can see that the distribution curve of pH attribute is
+normal with median in 3.18, mean in 3.188, 1st quartile in 3.09 and 3rd quartile
+in 3.28. Alcohol curve however is positively skewed with median in 10.4, mean in
+10.51. It is interesting that both plots don't present same distribution since
+I've expected that alcohol content would be highly related to the pH. However,
+the different distribution shapes show the opposite.
 
 ## Residual Sugar, chlorides and density
 
-Finally, let's explore the remaining attributes distributions: residual sugar, chlorides and density.
+Finally, let's explore the remaining attributes distributions: residual sugar,
+chlorides and density.
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
 p1 = ggplot(aes(x = residual.sugar), data = df_ww) + 
@@ -192,7 +247,17 @@ p3 = ggplot(aes(x = density), data = df_ww) +
 grid.arrange(p1,p2,p3,ncol=1)
 ```
 
-We can see that all attributes present a approximattely normal distribution with execption of residual sugar attribute. Residual sugar is highly left skewed. In order to see residual sugar behaviour on others regions, let's rearrange our plot with a log scale on x-axis.
+```{r}
+summary(df_ww$residual.sugar)
+summary(df_ww$chlorides)
+summary(df_ww$density)
+```
+
+We can see that all attributes present a approximately normal distribution with
+exception of residual sugar attribute. Residual sugar is highly positively
+skewed causing median in 5.2 to diverge from mean in 6.391. In order to see
+residual sugar behavior on others regions, let's rearrange our plot with a log
+scale on x-axis.
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
 p1 = ggplot(aes(x = residual.sugar), data = df_ww) + 
@@ -215,23 +280,33 @@ p2 = ggplot(aes(x = residual.sugar), data = df_ww) +
 grid.arrange(p1,p2,ncol=1)
 ```
 
-With log10 x scale it's possible to notice a bimodal distribution with most wines having residual sugar between 1 and 2 or between 7 and 15 showing that some wines present higher sugar amount than others.
+With log10 x scale it's possible to notice a bi-modal distribution with most
+wines having residual sugar between 1 and 2 or between 7 and 15 showing that
+some wines present higher sugar amount than others.
 
 # Bivariate e Multivariate Plots Section
 
 ## Correlation Matrix
 
-Before starting to analyse the bivariate plots, let's produce the correlation matrix using pearson method in order to have initial correlation indexs between attributes and to focus our multivariate analysis on those attributes.
+Before starting to analyse the bi-variate plots, let's produce the correlation
+matrix using Pearson method in order to have initial correlation indexes between
+attributes and to focus our multivariate analysis on those attributes.
 
-```{r echo=FALSE, message=FALSE, warning=FALSE}
-cor(df_ww)
+```{r echo=FALSE, message=FALSE, warning=FALSE, include=TRUE, cache=FALSE}
+ggcorr(df_ww[2:13], angle=90, hjust=0.15, label_size=3, label_round=2, 
+       label=TRUE)
 ```
 
-Through the matrix we can see strong correlations between some attributes. For instance, density and alcohol present linear correlation of -0.78. Density and residual sugar, linear correlation of 0.84. Quality and alcohol, linear correlation of 0.43.
+Through the matrix we can see strong correlations between some attributes. For
+instance, density and alcohol present linear correlation of -0.78. Density and
+residual sugar, linear correlation of 0.84. Quality and alcohol, linear
+correlation of 0.43.
 
 ## Creating Sulphates and Residual Sugar buckets
 
-In order to help in our multivariate exploration, let's bucket the residual sugar and sulphates buckets so that we color others scatter plots attributes using these buckets as references.
+In order to help in our multivariate exploration, let's bucket the residual
+sugar and sulphates buckets so that we color others scatter plots attributes
+using these buckets as references.
 
 ```{r}
 df_ww$quality <- factor(df_ww$quality)
@@ -246,33 +321,45 @@ str(df_ww$residual.sugar.bucket)
 
 ## Density Exploration
 
-Density is expected to have strong linear relationship with residual sugar and alcohol, given that these last two attributes alter the wine water density. Let's plot scatter plots in oder to visualize these realtionships.
+Density is expected to have strong linear relationship with residual sugar and
+alcohol, given that these last two attributes alter the wine water density.
+Furthermore, according to the correlation matrix, density present linear
+correlation coefficient of 0.84 with residual sugar and -0.78 with alcohol.
+Let's produce scatter plots in order to visualize these relationships. 
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
 p1 = ggplot(aes(x=residual.sugar, y=density), data=df_ww) +
   geom_point(alpha=1/30) +
+  xlim(0,quantile(df_ww$residual.sugar,0.99)) +
+  ylim(quantile(df_ww$density,0), quantile(df_ww$density,0.99)) +
   ggtitle('Density vs Residual Sugar') +
-  xlab('Residual Sugar') +
-  ylab('Density') +
+  xlab(xlab(bquote('Residual Sugar ['~g/dm^3~ ']'))) +
+  ylab('Density ['~g/cm^3~ ']') +
   theme(plot.title = element_text(hjust = 0.5)) +
   geom_smooth()
 
 p2 = ggplot(aes(x=alcohol, y=density), data=df_ww) +
   geom_point(alpha=1/30) +
+  ylim(quantile(df_ww$density,0), quantile(df_ww$density,0.99)) +
   ggtitle('Density vs Alcohol') +
-  xlab('Alcohol') +
-  ylab('Density') +
+  xlab('Alcohol [% by volume]') +
+  ylab('Density ['~g/cm^3~ ']') +
   theme(plot.title = element_text(hjust = 0.5)) +
   geom_smooth()
 
 grid.arrange(p1,p2,ncol=1)
 ```
 
-As expected, density present strong linear correlation with residual sugar and alcohol. Given that these two factors acts directly in changing the water density, due to chemical concepts, it's possible to say that density holds a causation relationship with them.
+As expected, density presents strong linear correlation with residual sugar and
+alcohol. Given that these two factors acts directly in changing the water
+density, due to chemical concepts, it's possible to say that density holds a
+causation relationship with them.
 
 ## pH and Fixed Acidity Exploration
 
-Also, through the matrix, we see a strong corrlearion index between pH and fixed acidity. Again, chemical concepts support these relationship once acidity influences the pH substance. Let's visualize it.
+Also, through the matrix, we see a strong correlation index between pH and fixed
+acidity. Again, chemical concepts support these relationship once acidity
+influences the pH substance. Let's visualize it.
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
 ggplot(aes(x=fixed.acidity, y=pH), data=df_ww) +
@@ -284,55 +371,126 @@ ggplot(aes(x=fixed.acidity, y=pH), data=df_ww) +
   
 ```
 
-The correlation is confirmed and we notice that most wines have pH between 3.0 and 3.3. Also, the relationship is not so strong as expected. Maybe others attributes besides fixed acidity are influencing the wines pH.
+The linear correlation of -0.43 is confirmed and we notice that most wines have
+pH between 3.0 and 3.3. Also, the relationship is not so strong as expected.
+Maybe others attributes besides fixed acidity are influencing the wines pH.
 
-First, let's see trough a scatter plot how sulphates effect the pH vs Fixed Acidity distribution.
+First, let's see trough a scatter plot how sulphates effect the pH vs Fixed
+Acidity distribution.
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
 ggplot(aes(x=fixed.acidity, y=pH), data=df_ww) +
   geom_point(aes(color=sulphates.bucket), alpha=1/2) +
   scale_color_brewer(type = 'qual',
                      guide = guide_legend(title = "Sulphates",
-                                          override.aes = list(alpha = 1, size = 1))) +
+                                          override.aes = list(alpha = 1, 
+                                                              size = 1))) +
   ggtitle('pH vs Fixed Acidity') +
   xlab('Fixed Acidity') +
   ylab('pH') +
   theme(plot.title = element_text(hjust=0.5))
 ```
 
-It is hard to detect some pattern on how sulphates alter a pH wine. Trough the previous plot it is not possible to find any tendency.
+It is hard to detect some pattern on how sulphates alter a pH wine. Trough the
+previous plot it is not possible to find any tendency.
 
-Proceeding with the pH vs fixed acidity exploration, let's now color our scatter plot with the residual sugar attribute as reference.
+Proceeding with the pH vs fixed acidity exploration, let's now color our scatter
+plot with the residual sugar attribute as reference.
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
 ggplot(aes(x=fixed.acidity,y=pH), data=df_ww) +
   geom_point(aes(color=residual.sugar.bucket), alpha=1/3) +
   scale_color_brewer(type = 'qual',
                      guide = guide_legend(title = "Residual Sugar",
-                                          override.aes = list(alpha = 1, size = 1))) +
+                                          override.aes = list(alpha = 1, 
+                                                              size = 1))) +
   ggtitle('pH vs Fixed Acidity') +
   xlab('Fixed Acidity') +
   ylab('pH') +
   theme(plot.title = element_text(hjust=0.5))
 ```
 
-Through the previous plot, we see a tendency where wines with higher residual sugar amount present lower pH (more acid). However this tendency is weak and we can't see a clear pattern of how residual sugar influences the pH. This means that in addition to the fixed acidity, residual sugar may be acting in a wine pH, despite not having strong linear correlation.
+Through the previous plot, we see a tendency where wines with higher residual
+sugar amount present lower pH (more acid). However this tendency is weak and we
+can't see a clear pattern of how residual sugar influences the pH. This means
+that in addition to the fixed acidity, residual sugar may be acting in a wine
+pH, despite not having strong linear correlation.
 
 ## Quality Exploration
 
-Now let's explore how wine quality relates with some attributes. First, as detected by the correlation matrix, quality presents strong linear correlation with alcohol. Let's visualize this relation in order to confirm it.
+Now let's explore how wine quality relates with some attributes. First, as
+detected by the correlation matrix, quality presents strong linear correlation
+with alcohol. Let's visualize this relation in order to confirm it.
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
-ggplot(aes(x=alcohol, y=quality), data=df_ww) +
-  geom_jitter(alpha=1/5) +
-  geom_smooth() +
-  ggtitle('Quality vs Alcohol') +
-  xlab('Alcohol') +
-  ylab('Quality') +
+ggplot(aes(x=quality, y=alcohol), data=df_ww) +
+  geom_jitter(alpha=.3) +
+  geom_boxplot( alpha = .5,color = 'blue')+
+  stat_summary(fun.y = "mean", 
+               geom = "point", 
+               color = "red", 
+               shape = 8, 
+               size = 2.5) +
+  ggtitle('Alcohol vs Quality') +
+  xlab('Quality') +
+  ylab('Alcohol') +
   theme(plot.title = element_text(hjust=0.5))
 ```
 
-In fact, we see that wines with more alcohol presence tend to be better reviewed by the experts. 
+In fact, we see that wines with more alcohol presence tend to be better reviewed
+by the experts as the mean wine quality increase due to the linear correlation
+coefficient of 0.44. We also see some discrepancy between mean and median for
+wines with 5% and 8% alcohol volume due to the outliers found.
+
+Carrying on with the quality exploration, let's visualize the relation with the
+density, expecting to present strong correlation once the linear correlation
+between them (provided by the correlation matrix) is -0.31 and also considering
+that density correlates to alcohol, as showed in previous bi variate plots.
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+ggplot(aes(x=quality, y=density), data=df_ww) +
+  geom_jitter(alpha=.2) +
+  geom_boxplot( alpha = .5,color = 'blue')+
+  stat_summary(fun.y = "mean", 
+               geom = "point", 
+               color = "red", 
+               shape = 8, 
+               size = 2.5) +
+  ggtitle('Density vs Quality') +
+  xlab('Quality') +
+  ylab('Density') +
+  ylim(quantile(df_ww$density, 0), quantile(df_ww$density, 0.99)) +
+  theme(plot.title = element_text(hjust=0.5))
+```
+
+We clearly can notice that density median tend to decrease as quality increases.
+This confirms the strong linear correlation index of -0.31 between them and also
+the correlation with alcohol.
+
+Now, considering that chlorides also presented relatively strong linear
+correlation with quality, let's plot this relationship in order to check if it
+is confirmed.
+
+```{r}
+ggplot(aes(x=quality, y=chlorides), data=df_ww) +
+  geom_jitter(alpha=.2) +
+  geom_boxplot( alpha = .5,color = 'blue')+
+  stat_summary(fun.y = "mean", 
+               geom = "point", 
+               color = "red", 
+               shape = 8, 
+               size = 2.5) +
+  ylim(0,quantile(df_ww$chlorides,0.99)) +
+  ggtitle('Density vs Quality') +
+  xlab('Quality') +
+  ylab('Chlorides') +
+  theme(plot.title = element_text(hjust=0.5))
+```
+
+Again the visualization certified that chlorides is relatively strong correlated
+(compared to others attributes) with linear correlation index of -0.21. We also
+see trough medians and mean in the plot that, due to higher outliers, means are
+higher than medians, as showed below.
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
 ggplot(aes(x=alcohol, y=density), data=df_ww) +
@@ -344,12 +502,18 @@ ggplot(aes(x=alcohol, y=density), data=df_ww) +
   theme(plot.title = element_text(hjust=0.5)) +
   scale_color_brewer(type = 'qual',
                      guide = guide_legend(title = "Quality",
-                                          override.aes = list(alpha = 1, size = 1)))
+                                          override.aes = list(alpha = 1, 
+                                                              size = 1)))
 ```
 
-This plot show the interisting strong correlation between alcohol. It's easy to notice that wine quality inceases as alcohol volume increases and density decreases. However, we see some outliers of good quality with low alcohol amount and high density. Maybe others factors like residual sugar and fixed acidty also influence in wine quality altough not presenting strong linear correlation.
+This plot show the interesting strong correlation between alcohol. It's easy to
+notice that wine quality increases as alcohol volume increases and density
+decreases. However, we see some outliers of good quality with low alcohol amount
+and high density. Maybe others factors like residual sugar and fixed acidity also
+influence in wine quality although not presenting strong linear correlation.
 
-So, in order to explore which others factor make a high quality wine, let's produce other plots replacing density by them. 
+So, in order to explore which others factor make a high quality wine, let's
+produce other plots replacing density by them. 
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
 ggplot(aes(x=alcohol,y=residual.sugar), data=df_ww) +
@@ -361,10 +525,12 @@ ggplot(aes(x=alcohol,y=residual.sugar), data=df_ww) +
   theme(plot.title = element_text(hjust=0.5)) +
   scale_color_brewer(type = 'qual',
                      guide = guide_legend(title = "Quality",
-                                          override.aes = list(alpha = 1, size = 1)))
+                                          override.aes = list(alpha = 1, 
+                                                              size = 1)))
 ```
 
-Those outliers are still there with high residual sugar amount and low alcohol. So residual sugar by itself doesn't explain them.
+Those outliers are still there with high residual sugar amount and low alcohol.
+So residual sugar by itself doesn't explain them.
 
 Let's see now volatile acidity.
 
@@ -378,10 +544,12 @@ ggplot(aes(x=alcohol,y=volatile.acidity), data=df_ww) +
   theme(plot.title = element_text(hjust=0.5)) +
   scale_color_brewer(type = 'qual',
                      guide = guide_legend(title = "Quality",
-                                          override.aes = list(alpha = 1, size = 1)))
+                                          override.aes = list(alpha = 1, 
+                                                              size = 1)))
 ```
 
-This plot show a interesting slight tendency where wine with low volatile acidity amount on lower alcohol present better quality.
+This plot show a interesting slight tendency where wine with low volatile
+acidity amount on lower alcohol present better quality.
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
 ggplot(aes(x=alcohol,y=total.sulfur.dioxide), data=df_ww) +
@@ -393,10 +561,14 @@ ggplot(aes(x=alcohol,y=total.sulfur.dioxide), data=df_ww) +
   theme(plot.title = element_text(hjust=0.5)) +
   scale_color_brewer(type = 'qual',
                      guide = guide_legend(title = "Quality",
-                                          override.aes = list(alpha = 1, size = 1)))
+                                          override.aes = list(alpha = 1, 
+                                                              size = 1)))
 ```
 
-It is really difficult to find some pattern on total sulfur dioxide's influence on wine quality. As detected by previous scatter multivariate plots, alcohol strong correlates with wine quality, however we don't see clearly in the this plot how total sulfur dioxide exactly acts on wine quality.
+It is really difficult to find some pattern on total sulfur dioxide's influence
+on wine quality. As detected by previous scatter multivariate plots, alcohol
+strong correlates with wine quality, however we don't see clearly in the this
+plot how total sulfur dioxide exactly acts on wine quality.
 
 # Final Plots and Summary
 
@@ -406,30 +578,36 @@ ggplot(aes(x=alcohol, y=quality), data=df_ww) +
   geom_jitter(alpha=1/5) +
   geom_smooth() +
   ggtitle('Wine quality vs Alcohol') +
-  xlab('Alcohol (% by volume)') +
+  xlab('Alcohol [% by volume]') +
   ylab('Wine quality') +
   theme(plot.title = element_text(hjust=0.5))
 ```
 
 ### Description One
 
-Through this plot we can see that wine quality strongly correlates with alcohol amount. Quality tend to increase as alcohol increases. Moreover, according to the correlation matrix produced previously on this report, alcohol is the attribute that presents the most substantial correlation with quality wine.
+Through this plot we can see that wine quality strongly correlates with alcohol
+amount. Quality tend to increase as alcohol increases. Moreover, according to
+the correlation matrix produced previously on this report, alcohol is the
+attribute that presents the most substantial correlation with quality wine.
 
 ### Plot Two
 ```{r echo=FALSE, message=FALSE, warning=FALSE, Plot_Two}
 p1 = ggplot(aes(x=residual.sugar, y=density), data=df_ww) +
   geom_point(alpha=1/30) +
+  xlim(0,quantile(df_ww$residual.sugar,0.99)) +
+  ylim(quantile(df_ww$density,0), quantile(df_ww$density,0.99)) +
   ggtitle('Density vs Residual Sugar') +
-  xlab('Residual Sugar') +
-  ylab('Density') +
+  xlab(xlab(bquote('Residual Sugar ['~g/dm^3~ ']'))) +
+  ylab('Density ['~g/cm^3~ ']') +
   theme(plot.title = element_text(hjust = 0.5)) +
   geom_smooth()
 
 p2 = ggplot(aes(x=alcohol, y=density), data=df_ww) +
   geom_point(alpha=1/30) +
+  ylim(quantile(df_ww$density,0), quantile(df_ww$density,0.99)) +
   ggtitle('Density vs Alcohol') +
-  xlab('Alcohol') +
-  ylab('Density') +
+  xlab('Alcohol [% by volume]') +
+  ylab('Density ['~g/cm^3~ ']') +
   theme(plot.title = element_text(hjust = 0.5)) +
   geom_smooth()
 
@@ -438,7 +616,12 @@ grid.arrange(p1,p2,ncol=1)
 
 ### Description Two
 
-The correlation matrix also identified really strong correlations between density and alcohol or residual sugar. In fact, this is exepected given that alcohol and residual sugar alter the water wine density due chemical concepts. Visualizing this relationship on the previous plots, it is possible to confirm the correlation showing that density tend to increase as residual sugar increases or tend to decrease as alcohol increases.
+The correlation matrix also identified really strong correlations between
+density and alcohol or residual sugar. In fact, this is expected given that
+alcohol and residual sugar alter the water wine density due chemical concepts.
+Visualizing this relationship on the previous plots, it is possible to confirm
+the correlation showing that density tend to increase as residual sugar
+increases or tend to decrease as alcohol increases.
 
 ### Plot Three
 ```{r echo=FALSE , message=FALSE, warning=FALSE, Plot_Three}
@@ -447,23 +630,46 @@ ggplot(aes(x=alcohol,y=volatile.acidity), data=df_ww) +
   ylim(0,quantile(df_ww$volatile.acidity,0.99)) +
   scale_color_brewer(type = 'qual',
                      guide = guide_legend(title = "Quality",
-                                          override.aes = list(alpha = 1, size = 1))) +
+                                          override.aes = list(alpha = 1, 
+                                                              size = 1))) +
   ggtitle('Volatile acidity vs Alcohol') +
-  xlab('Alcohol (% by volume)') +
-  ylab('Volatile acidity') +
+  xlab('Alcohol [% by volume]') +
+  ylab('Volatile Acidity ['~g/dm^3~ ']') +
   theme(plot.title = element_text(hjust = 0.5))
 ```
 
 ### Description Three
 
-Again we see the relevant correlation between alcohol and quality, however this plot also show a slight tendency where quality tend to increase as volatile acidity decreases at lower alcohol volumes amounts. This fact shows that, besides alcohol, others attributes contribute to the wine quality and when mixed may determine a high quality wine.
+Again we see the relevant correlation between alcohol and quality, however this
+plot also show a slight tendency where quality tend to increase as volatile
+acidity decreases at lower alcohol volumes amounts. This fact shows that,
+besides alcohol, others attributes contribute to the wine quality and when mixed
+may determine a high quality wine.
 
 ------
 
 # Reflection
 
-The dataset provided by Cortez et al. (2009) contains attributes of 4,898 white wines. With this data collectiokn it was possible to explore how this chemical atributes correlate bewteen them and also how they impact in a white wine quality. Each wine was reviewed by experts with grades between 1 and 10. 
-Initially, the exploration approached the attributes distribution with univariate histogram plots aid. Most attributes presented normal distribution with residual sugar exception. After that, through the matrix correlation and bivariate scatter plots, the correlations between the attributes were analyzed. Some chemical concepts were confirmed by really strong correlations, as density depending on residual sugar and alcohol. Also, still on bivariate analysis, it was surprising to discover that alcohol produced the highest correlation with quality wine. It was really hard to detect some pattern in correlation between wine quality and other attributes, but thanks to multivariate scatter plots, it was possible to notice that other attributes also acts on wine quality. Volatile acidity contibutes in a higher wine quality given that low volatile acidity tends to increase quality. However, others multivariates plots failed in showing strong patterns and correlation and was not possible to gather some insights and resolutions trough them. Thinking in future works, this dataset could be pontentialized with more wine attributes observations so that a quality prediction model could be made using machine learning techniques.
+The data set provided by Cortez et al. (2009) contains attributes of 4,898 white
+wines. With this data collection it was possible to explore how this chemical
+attributes correlate between them and also how they impact in a white wine
+quality. Each wine was reviewed by experts with grades between 1 and 10.
+Initially, the exploration approached the attributes distribution with
+uni-variate histogram plots aid. Most attributes presented normal distribution
+with residual sugar exception. After that, through the matrix correlation and
+bi-variate scatter plots, the correlations between the attributes were analyzed.
+Some chemical concepts were confirmed by really strong correlations, as density
+depending on residual sugar and alcohol. Also, still on bi-variate analysis, it
+was surprising to discover that alcohol produced the highest correlation with
+quality wine. It was really hard to detect some pattern in correlation between
+wine quality and other attributes, but thanks to multivariate scatter plots, it
+was possible to notice that other attributes also acts on wine quality. Volatile
+acidity contributes in a higher wine quality given that low volatile acidity
+tends to increase quality. However, others multivariate plots failed in showing
+strong patterns and correlation and was not possible to gather some insights and
+resolutions trough them. Thinking in future works, this data set could be
+pontentialized with more wine attributes observations so that a quality
+prediction model could be made using machine learning techniques. 
 
 # References
 
