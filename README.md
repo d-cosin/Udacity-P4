@@ -1,4 +1,4 @@
-# Udacity-P4
+# White Wine Exploratory Data Analysis
 
 Repositary used for Udacity Data Analyst Nanodegree 4th Project: Explore and Summarize Data.
 
